@@ -1,14 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charsxet=UTF-8">
 <title>Insert title here</title>
 </head>
 <head>
-    <title>Upload</title>
-    <script language="javascript">
+<title>Upload</title>
+<script language="javascript">
         function info(txt) { document.getElementById('info').innerHTML = txt; }
         function code(txt) {
             var passedTXT = txt;
@@ -219,84 +219,99 @@
                  var payload = invocation.responseText; // TODO no-op
               }
             }
-            var token = '<%=(String) session.getAttribute("token")%>'; // set from the server side on first time invocation.
-            invocation.open('POST', 'https://developer.api.autodesk.com/utility/v1/settoken', false); // do a sync call
-            invocation.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            invocation.onreadystatechange = handler;  // see above
-            invocation.withCredentials = true;
-            invocation.send("access-token=" + token);   // expected to set the cookie upon server response			
-		
-			 //random bucket to avoid confliction
-			 // NOTE: do not need to create a bucket every time, it's recommended to use one bucket 
-			var uploadBucket = "translation_daniel" + Math.ceil(Math.random() * 99);
-			
-			//if it does not exist, you need to create one,
-			//please refer to http://developer.api.autodesk.com/documentation/v1/oss.html#oss-bucket-and-object-api-v1-0
-			CreateBucket(uploadBucket,invocation);
-			
-			
-			
-            // create CORS request
-            var method = 'PUT';
-            
-            var uploadServerUrl = "https://developer.api.autodesk.com";
-            var url = uploadServerUrl + '/oss/v1/buckets/' + uploadBucket + '/objects/' + escape(f.name);
-            var headers = {
-                'Content-Type'  : f.type || 'application/stream',
-            };
+            var token = '<%=(String) session.getAttribute("token")%>';
+		// set from the server side on first time invocation.
+		invocation
+				.open(
+						'POST',
+						'https://developer.api.autodesk.com/utility/v1/settoken',
+						false); // do a sync call
+		invocation.setRequestHeader('Content-Type',
+				'application/x-www-form-urlencoded');
+		invocation.onreadystatechange = handler; // see above
+		invocation.send("access-token=" + token); // expected to set the cookie upon server response			
 
-            var xhr = createCORSRequest(method, url, headers);
-            if (!xhr) {
-                info('CORS not supported');
-                return;
-            }
+		//random bucket to avoid confliction
+		// NOTE: do not need to create a bucket every time, it's recommended to use one bucket 
+		var uploadBucket = "translation_daniel" + Math.ceil(Math.random() * 99);
 
-            // Handlers.
-            xhr.onload = function() { code(xhr.responseText); };
-            xhr.onerror = function() { info('Woops, there was an error making the request.'); };
-            xhr.onprogress = updateProgress;
+		//if it does not exist, you need to create one,
+		//please refer to http://developer.api.autodesk.com/documentation/v1/oss.html#oss-bucket-and-object-api-v1-0
+		CreateBucket(uploadBucket, invocation);
 
-            var reader = new FileReader();
-            reader.onerror = errorHandler;
-            //reader.onprogress = updateProgress;
-            reader.onabort = function(e) { info('File read cancelled'); };
-            reader.onloadstart = function(e) { document.getElementById('progress_bar').className = 'loading'; };
-            reader.onload = function(e) {
-              // Ensure that the progress bar displays 100% at the end.
-              var progress = document.querySelector('.percent');
-              progress.style.width = '100%';
-              progress.textContent = '100%';
-              setTimeout("document.getElementById('progress_bar').className='';", 2000);
-            }
-            reader.onloadend = function(evt) {
-              if (evt.target.readyState == FileReader.DONE) {
-                xhr.send(evt.target.result);
-              }
-            };
-            var blob = f.slice(0, f.size);
-            reader.readAsArrayBuffer(blob);
-        }
-    </script>
+		// create CORS request
+		var method = 'PUT';
+
+		var uploadServerUrl = "https://developer.api.autodesk.com";
+		var url = uploadServerUrl + '/oss/v1/buckets/' + uploadBucket
+				+ '/objects/' + escape(f.name);
+		var headers = {
+			'Content-Type' : f.type || 'application/stream',
+		};
+
+		var xhr = createCORSRequest(method, url, headers);
+		if (!xhr) {
+			info('CORS not supported');
+			return;
+		}
+
+		// Handlers.
+		xhr.onload = function() {
+			code(xhr.responseText);
+		};
+		xhr.onerror = function() {
+			info('Woops, there was an error making the request.');
+		};
+		xhr.onprogress = updateProgress;
+
+		var reader = new FileReader();
+		reader.onerror = errorHandler;
+		//reader.onprogress = updateProgress;
+		reader.onabort = function(e) {
+			info('File read cancelled');
+		};
+		reader.onloadstart = function(e) {
+			document.getElementById('progress_bar').className = 'loading';
+		};
+		reader.onload = function(e) {
+			// Ensure that the progress bar displays 100% at the end.
+			var progress = document.querySelector('.percent');
+			progress.style.width = '100%';
+			progress.textContent = '100%';
+			setTimeout("document.getElementById('progress_bar').className='';",
+					2000);
+		}
+		reader.onloadend = function(evt) {
+			if (evt.target.readyState == FileReader.DONE) {
+				xhr.send(evt.target.result);
+			}
+		};
+		var blob = f.slice(0, f.size);
+		reader.readAsArrayBuffer(blob);
+	}
+</script>
 </head>
 
 
-  <body>
-  <jsp:include page="./header.jsp" />
-    <div id="progress_bar"><div class="percent">0%</div></div>
-    <h3 id="info"></h3>
-      <p></p>
-    <div>
-        <input  type="file" id="files" name="file" />
-        <output id="list"></output>
-    </div>
-      <span >
-          <button class="sendBytesButtons">Upload File</button>
-      </span>
+<body>
+	<jsp:include page="./header.jsp" />
+	<div id="progress_bar">
+		<div class="percent">0%</div>
+	</div>
+	<h3 id="info"></h3>
+	<p></p>
+	<div>
+		<input type="file" id="files" name="file" />
+		<output id="list"></output>
+	</div>
+	<span>
+		<button class="sendBytesButtons">Upload File</button>
+	</span>
 
-    <div id="byte_content"></div>
-    <script>
-      init();
-    </script>
+	<div id="byte_content"></div>
+	<script>
+		init();
+	</script>
 
-  </body>
+</body>
 </html>
