@@ -4,7 +4,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charsxet=UTF-8">
-<title>Insert title here</title>
+<link type="text/css" rel="stylesheet" href="./bootstrap.min.css">
+<title>Upload</title>
 </head>
 <head>
 <title>Upload</title>
