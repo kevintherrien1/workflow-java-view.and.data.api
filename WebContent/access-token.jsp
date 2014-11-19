@@ -5,26 +5,28 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link type="text/css" rel="stylesheet" href="./bootstrap.min.css">
-<title>Simple Java Sample</title>
+<title>Access Token</title>
 </head>
 <body>
 
-	<jsp:include page="header.jsp" />
-	<div class="container">
+<jsp:include page="header.jsp" />
+<div class="container">
 
 	<form action="./access-token" method="POST">
 		Consumer Key: 
 
-		<input class="form-control inputDefault" type="text" name="key" size="50" value=""><br>
+		<input class="form-control inputDefault" type="text" name="key" size="30"><br>
 		Consumer Secret: 
 
-		<input class="form-control inputDefault" type="text" name="secret" size="50" value=""><br>
+		<input class="form-control inputDefault" type="text" name="secret" size="30"><br>
 		<br> <input type="submit" value="Get Access Token">
 	</form>
 	
-	
+	<br>
 	Access Token: ${token}
-	</div>
+	<br><br>	
+	
+</div>
 
 </body>
 </html>

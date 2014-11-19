@@ -33,8 +33,7 @@
             invocation.withCredentials = true;
             var tosend = "{ \"urn\": \"" +  base64URN + "\"}";
             invocation.send(tosend);
-            document.getElementById('byte_content').innerHTML = "<pre><code>" + "uploaded filename is: '" + key + "'.<BR>" +
-                    "urn is: " + base64URN + "</code></pre>";
+            document.getElementById('byte_content').innerHTML = base64URN;
 
             invocation = new XMLHttpRequest();
             invocation.open('POST', '/tek3/web/Site/form/view/list.jsp?name=' + key + '&base64=' + base64URN, false); // do a sync call
@@ -191,7 +190,7 @@
 						//conflict, existed
 					}
 					else {
-						alert('error when creating bucket');
+						console.log("error when creating bucket")
 					}
 					 
 				  }
@@ -295,6 +294,7 @@
 
 
 <body>
+<div class="container">
 	<jsp:include page="./header.jsp" />
 	<div id="progress_bar">
 		<div class="percent">0%</div>
@@ -313,6 +313,7 @@
 	<script>
 		init();
 	</script>
+	</div>
 
 </body>
 </html>
