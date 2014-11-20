@@ -16,7 +16,7 @@
 	<input type="submit" value="Create a Bucket">
 </form>
 	<br>
-	 ${create-bucket-response}
+	 ${createBucketResponse}
 
 </div>
 </body>

@@ -20,48 +20,41 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/BucketCreator")
 public class BucketCreator extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public BucketCreator() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		String bucketName = request.getParameter("bucket-name");
-		
+		request.getSession().setAttribute("bucketName", bucketName);
+
 		// get the token from access token generator
 		String token = null;
-		
+
 		DataOutputStream output = null;
 		InputStream input = null;
 		BufferedReader buffer = null;
-		
-		System.out.println("run");
-		
+
+		token = (String) request.getSession().getAttribute("token");
+
 		// create bucket
 		try {
-			token = (String) request.getSession().getAttribute("token");
+
 			URL bucketURL = new URL(
 					"https://developer.api.autodesk.com/oss/v1/buckets");
 			HttpsURLConnection connection = (HttpsURLConnection) bucketURL
 					.openConnection();
 			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type",
-					"application/json");
-			connection.setRequestProperty("Authorization",
-					"Bearer "+ token);
+			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("Authorization", "Bearer " + token);
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
 
 			output = new DataOutputStream(connection.getOutputStream());
-			output.writeBytes("{\"bucketKey\":\""+ bucketName +",\"policy\":\"persistent\"}");
-			
+			output.writeBytes("{\"bucketKey\":\"" + bucketName
+					+ "\",\"policy\":\"transient\"}");
 
 			// parse the response
 			if (connection.getResponseCode() >= 400) {
@@ -70,7 +63,7 @@ public class BucketCreator extends HttpServlet {
 				input = connection.getInputStream();
 			}
 			buffer = new BufferedReader(new InputStreamReader(input));
-			
+
 			String line;
 			StringBuffer stringBuffer = new StringBuffer();
 			while ((line = buffer.readLine()) != null) {
@@ -78,17 +71,31 @@ public class BucketCreator extends HttpServlet {
 				stringBuffer.append('\r');
 			}
 
+			request.getSession().setAttribute("createBucketResponse",
+					stringBuffer);
+
 			System.out.println(stringBuffer);
+
+			String responseString = stringBuffer.toString();
+			int index = responseString.indexOf("\"access_token\":\"")
+					+ "\"access_token\":\"".length();
+			int index2 = responseString.indexOf("\"", index);
+			token = responseString.substring(index, index2);
+
 		} catch (IOException e) {
 			System.out.println("Network connection error");
 		}
+
+		request.getSession().setAttribute("bucketName", bucketName);
 		response.sendRedirect("./create-bucket.jsp");
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 

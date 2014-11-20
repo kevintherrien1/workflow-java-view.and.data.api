@@ -8,9 +8,13 @@
     <servlet-name>access-token</servlet-name>
     <servlet-class>com.autodesk.api.sample.servlet.AccessTokenGenerator</servlet-class>
   </servlet>
-    <servlet>
+  <servlet>
     <servlet-name>bucket</servlet-name>
     <servlet-class>com.autodesk.api.sample.servlet.BucketCreator</servlet-class>
+  </servlet>
+    <servlet>
+    <servlet-name>upload</servlet-name>
+    <servlet-class>com.autodesk.api.sample.servlet.FileUploader</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>access-token</servlet-name>
@@ -19,5 +23,9 @@
   <servlet-mapping>
     <servlet-name>bucket</servlet-name>
     <url-pattern>/create-bucket</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>upload</servlet-name>
+    <url-pattern>/upload</url-pattern>
   </servlet-mapping>
 </web-app>
