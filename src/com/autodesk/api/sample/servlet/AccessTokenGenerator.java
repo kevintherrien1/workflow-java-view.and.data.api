@@ -23,13 +23,15 @@ public class AccessTokenGenerator extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	public String token = null;
+	public String key = null;
+	public String secret = null;
        
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String key = request.getParameter("key");
-		String secret = request.getParameter("secret");
+		key = request.getParameter("key");
+		secret = request.getParameter("secret");
 		
 		DataOutputStream output = null;
 		InputStream input = null;
@@ -54,7 +56,7 @@ public class AccessTokenGenerator extends HttpServlet {
 					+ URLEncoder.encode(secret, "UTF-8")
 					+ "&grant_type=client_credentials");
 
-			// parse the response
+			//get the response
 			input = connection.getInputStream();
 			buffer = new BufferedReader(new InputStreamReader(input));
 			String line;
@@ -65,14 +67,16 @@ public class AccessTokenGenerator extends HttpServlet {
 			}
 
 			System.out.println(stringBuffer);
+			
+			//parse the response
 			String responseString = stringBuffer.toString();
 			int index = responseString.indexOf("\"access_token\":\"")
 					+ "\"access_token\":\"".length();
 			int index2 = responseString.indexOf("\"", index);
 			token = responseString.substring(index, index2);
+			
 		} catch (IOException e) {
 			System.out.println("Network connection error");
-			
 		}
 		
 		request.getSession().setAttribute("token", token);
@@ -85,5 +89,5 @@ public class AccessTokenGenerator extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
 }

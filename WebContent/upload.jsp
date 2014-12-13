@@ -14,7 +14,7 @@
 <br>
 <form action="./upload" method="POST">
 	<div>
-		<input type="file" id="files" name="file" />
+		<input type="file" name="file" />
 	</div>
 	<br>
 	<span>

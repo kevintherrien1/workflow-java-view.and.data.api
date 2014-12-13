@@ -28,18 +28,25 @@ public class FileUploader extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		System.out.println("run");
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		// get token and bucket name from session
-		String bucketName = request.getParameter("bucket-name");
-		bucketName = (String) request.getSession().getAttribute("bucketName");
+		String bucketName = (String) request.getSession().getAttribute("bucketName");
 		String token = (String) request.getSession().getAttribute("token");
+		String filepath = request.getParameter("file");
 		
-		DataOutputStream output = null;
+		String urn = null;
+		
+		System.out.println(filepath);
+		
 		InputStream input = null;
 		BufferedReader buffer = null;
+		
+		// if token was not previously generated, send an error message
+		if (token == null || token.length() <= 0) {
+			request.getSession()
+					.setAttribute("createBucketResponse",
+							"Invalid token, please go back and generate another access token");
+		}
 
 		try {
 			
@@ -103,11 +110,7 @@ public class FileUploader extends HttpServlet {
 			}
 
 			System.out.println(stringBuffer);
-//			String responseString = stringBuffer.toString();
-//			int index = responseString.indexOf("\"access_token\":\"")
-//					+ "\"access_token\":\"".length();
-//			int index2 = responseString.indexOf("\"", index);
-//			token = responseString.substring(index, index2);
+			
 		} catch (IOException e) {
 			System.out.println("Network connection error");
 		}

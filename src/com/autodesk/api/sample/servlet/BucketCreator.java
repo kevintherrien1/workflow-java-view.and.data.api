@@ -38,6 +38,13 @@ public class BucketCreator extends HttpServlet {
 		BufferedReader buffer = null;
 
 		token = (String) request.getSession().getAttribute("token");
+		
+		// if token was not previously generated, send an error message
+		if (token == null || token.length() <= 0) {
+			request.getSession()
+					.setAttribute("createBucketResponse",
+							"Invalid token, please go back and generate another access token");
+		}
 
 		// create bucket
 		try {
@@ -75,12 +82,6 @@ public class BucketCreator extends HttpServlet {
 					stringBuffer);
 
 			System.out.println(stringBuffer);
-
-			String responseString = stringBuffer.toString();
-			int index = responseString.indexOf("\"access_token\":\"")
-					+ "\"access_token\":\"".length();
-			int index2 = responseString.indexOf("\"", index);
-			token = responseString.substring(index, index2);
 
 		} catch (IOException e) {
 			System.out.println("Network connection error");
