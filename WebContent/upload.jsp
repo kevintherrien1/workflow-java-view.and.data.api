@@ -12,13 +12,13 @@
 <jsp:include page="header.jsp" />
 <div class="container">
 <br>
-<form action="./upload" method="POST">
+<form action="./upload" method="post" enctype="multipart/form-data">
 	<div>
 		<input type="file" name="file" />
 	</div>
 	<br>
 	<span>
-    <input type="submit" value="Upload File">
+    <input type="submit" value="Upload File" />
 	</span>
 </form>
 </div>

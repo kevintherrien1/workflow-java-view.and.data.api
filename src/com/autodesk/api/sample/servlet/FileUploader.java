@@ -10,18 +10,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 /**
  * Servlet implementation class FileUploader
  */
 @WebServlet("/FileUploader")
+@MultipartConfig
 public class FileUploader extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -32,11 +36,17 @@ public class FileUploader extends HttpServlet {
 		// get token and bucket name from session
 		String bucketName = (String) request.getSession().getAttribute("bucketName");
 		String token = (String) request.getSession().getAttribute("token");
-		String filepath = request.getParameter("file");
 		
 		String urn = null;
 		
-		System.out.println(filepath);
+		
+	    Part filePart = request.getPart("file"); // Retrieves <input type="file" name="file">
+	    String filename = getFilename(filePart);
+	    InputStream filecontent = filePart.getInputStream();
+	    File uploadFile = new File(getServletContext().getRealPath("/") + System.currentTimeMillis() + filename);
+	    Files.copy(filecontent, uploadFile.toPath());
+	    System.out.println("uploadfile length" + uploadFile.length());
+	    
 		
 		InputStream input = null;
 		BufferedReader buffer = null;
@@ -50,7 +60,7 @@ public class FileUploader extends HttpServlet {
 
 		try {
 			
-			File binaryFile = new File("/Users/shiya/Box Sync/rac_basic_sample_project.rvt");
+			File binaryFile = uploadFile;
 			// Just generate some unique random value.
 			
 			URL uploadurl = new URL(
@@ -65,6 +75,8 @@ public class FileUploader extends HttpServlet {
 					"application/octet-stream");
 			connection.setRequestProperty("Content-Length",
 					Long.toString(binaryFile.length()));
+			
+			System.out.println("file length=" + binaryFile.length());
 			
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
@@ -84,12 +96,15 @@ public class FileUploader extends HttpServlet {
 			BufferedOutputStream bos = new BufferedOutputStream(
 					connection.getOutputStream());
 			BufferedInputStream bis = new BufferedInputStream(
-					new FileInputStream(binaryFile));
+					new FileInputStream("/Users/shiyaluo/Documents/rac_basic_sample_project.rvt"));
 			int i;
+			int j = 0;
 			// read byte by byte until end of stream
-			while ((i = bis.read()) > 0) {
+			while ((i = bis.read()) != -1) {
 				bos.write(i);
+				j++;
 			}
+			System.out.println("j = " + j);
 			bos.close();
 			
 			// parse the response
@@ -112,7 +127,7 @@ public class FileUploader extends HttpServlet {
 			System.out.println(stringBuffer);
 			
 		} catch (IOException e) {
-			System.out.println("Network connection error");
+			System.out.println(e);
 		}
 		response.sendRedirect("./upload.jsp");
 
@@ -123,6 +138,16 @@ public class FileUploader extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
+	}
+	
+	private static String getFilename(Part part) {
+	    for (String cd : part.getHeader("content-disposition").split(";")) {
+	        if (cd.trim().startsWith("filename")) {
+	            String filename = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+	            return filename.substring(filename.lastIndexOf('/') + 1).substring(filename.lastIndexOf('\\') + 1); // MSIE fix.
+	        }
+	    }
+	    return null;
 	}
 
 }

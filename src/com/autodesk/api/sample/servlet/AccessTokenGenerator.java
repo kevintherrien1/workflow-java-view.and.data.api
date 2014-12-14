@@ -48,6 +48,7 @@ public class AccessTokenGenerator extends HttpServlet {
 					"application/x-www-form-urlencoded");
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
+			
 
 			output = new DataOutputStream(connection.getOutputStream());
 			output.writeBytes("client_id="
@@ -55,12 +56,14 @@ public class AccessTokenGenerator extends HttpServlet {
 					+ "&client_secret="
 					+ URLEncoder.encode(secret, "UTF-8")
 					+ "&grant_type=client_credentials");
+			
 
 			//get the response
 			input = connection.getInputStream();
 			buffer = new BufferedReader(new InputStreamReader(input));
 			String line;
 			StringBuffer stringBuffer = new StringBuffer();
+			
 			while ((line = buffer.readLine()) != null) {
 				stringBuffer.append(line);
 				stringBuffer.append('\r');
@@ -76,7 +79,7 @@ public class AccessTokenGenerator extends HttpServlet {
 			token = responseString.substring(index, index2);
 			
 		} catch (IOException e) {
-			System.out.println("Network connection error");
+			System.out.println(e);
 		}
 		
 		request.getSession().setAttribute("token", token);
