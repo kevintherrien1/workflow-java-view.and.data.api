@@ -24,7 +24,7 @@
 	</form>
 	
 	<br>
-	Access Token: ${token}
+	Access Token: ${tokenResponse}
 	<br><br>	
 	
 </div>

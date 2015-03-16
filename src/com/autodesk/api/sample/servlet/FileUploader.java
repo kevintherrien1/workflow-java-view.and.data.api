@@ -44,9 +44,7 @@ public class FileUploader extends HttpServlet {
 	    String filename = getFilename(filePart);
 	    InputStream filecontent = filePart.getInputStream();
 	    File uploadFile = new File(getServletContext().getRealPath("/") + System.currentTimeMillis() + filename);
-	    Files.copy(filecontent, uploadFile.toPath());
-	    System.out.println("uploadfile length" + uploadFile.length());
-	    
+	    Files.copy(filecontent, uploadFile.toPath());	    
 		
 		InputStream input = null;
 		BufferedReader buffer = null;
@@ -76,27 +74,16 @@ public class FileUploader extends HttpServlet {
 			connection.setRequestProperty("Content-Length",
 					Long.toString(binaryFile.length()));
 			
-			System.out.println("file length=" + binaryFile.length());
+			System.out.println("file length = " + binaryFile.length());
 			
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-
-//			output = new DataOutputStream(connection.getOutputStream());
-//			
-//			OutputStream out = connection.getOutputStream();
-//		    PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true);
-//		    
-//		    System.out.println("connect 2");
-//		    
-//		    // Send binary file.
-//		    Files.copy(binaryFile.toPath(), out);
-//		    out.flush(); // Important before continuing with writer!
-//		    writer.flush(); // CRLF is important! It indicates end of boundary.
 			
 			BufferedOutputStream bos = new BufferedOutputStream(
 					connection.getOutputStream());
+			// TODO need to change the file directory to dynamic
 			BufferedInputStream bis = new BufferedInputStream(
-					new FileInputStream("/Users/shiyaluo/Documents/rac_basic_sample_project.rvt"));
+					new FileInputStream("/Users/shiya/Box Sync/rac_basic_sample_project.rvt"));
 			int i;
 			int j = 0;
 			// read byte by byte until end of stream
@@ -104,11 +91,10 @@ public class FileUploader extends HttpServlet {
 				bos.write(i);
 				j++;
 			}
-			System.out.println("j = " + j);
 			bos.close();
 			
 			// parse the response
-		    System.out.println(connection.getResponseCode());
+		    System.out.println("Server returned:" + connection.getResponseCode());
 			if (connection.getResponseCode() >= 400) {
 				input = connection.getErrorStream();
 			} else {
@@ -123,6 +109,8 @@ public class FileUploader extends HttpServlet {
 				stringBuffer.append(line);
 				stringBuffer.append('\r');
 			}
+			request.getSession().setAttribute("uploadResponse",
+					"File successfully uploaded, here's the response \n" + stringBuffer);
 
 			System.out.println(stringBuffer);
 			
@@ -130,7 +118,6 @@ public class FileUploader extends HttpServlet {
 			System.out.println(e);
 		}
 		response.sendRedirect("./upload.jsp");
-
 	}
 
 	/**

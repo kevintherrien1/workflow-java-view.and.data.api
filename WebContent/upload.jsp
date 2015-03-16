@@ -21,6 +21,7 @@
     <input type="submit" value="Upload File" />
 	</span>
 </form>
+${uploadResponse}
 </div>
 </body>
 </html>

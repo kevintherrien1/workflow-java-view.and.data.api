@@ -79,7 +79,7 @@ public class BucketCreator extends HttpServlet {
 			}
 
 			request.getSession().setAttribute("createBucketResponse",
-					stringBuffer);
+					"Bucket created, here's the response" + stringBuffer);
 
 			System.out.println(stringBuffer);
 
