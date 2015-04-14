@@ -81,7 +81,7 @@ public class AccessTokenGenerator extends HttpServlet {
 		} catch (IOException e) {
 			System.out.println(e);
 		}
-		request.getSession().setAttribute("tokenResponse", "Your token is: " + token +", it's being stored in session to use for the next 30 mins.");
+		request.getSession().setAttribute("tokenResponse", token);
 		request.getSession().setAttribute("token", token);
 		response.sendRedirect("./access-token.jsp");
 	}
